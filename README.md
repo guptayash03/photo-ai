@@ -2,6 +2,8 @@
 
 An AI-powered photo management platform that provides automatic categorization, face recognition, duplicate detection, and natural language search for large image libraries (100k+ images).
 
+https://github.com/user-attachments/assets/7b11c5c7-ccae-4df5-b73f-8b0071ccbf13
+
 ## Images
 
 ### Photos Page
