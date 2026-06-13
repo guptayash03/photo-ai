@@ -1,0 +1,290 @@
+{
+  "info": {
+    "name": "PhotoAI API",
+    "description": "AI-Powered Photo Management Platform API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/health"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Images",
+      "item": [
+        {
+          "name": "Upload Images",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/v1/images/upload",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "files",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Images",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/images?limit=30",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "images"],
+              "query": [
+                { "key": "limit", "value": "30" },
+                { "key": "cursor", "value": "", "disabled": true },
+                { "key": "category", "value": "", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Image",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/images/{{image_id}}"
+          }
+        },
+        {
+          "name": "Delete Image",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/api/v1/images/{{image_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search",
+      "item": [
+        {
+          "name": "Natural Language Search",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/v1/search",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"sunset at the beach\",\n  \"limit\": 20\n}"
+            }
+          }
+        },
+        {
+          "name": "Similar Images",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/search/similar/{{image_id}}?limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "search", "similar", "{{image_id}}"],
+              "query": [
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Faces",
+      "item": [
+        {
+          "name": "List Face Clusters",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/faces/clusters"
+          }
+        },
+        {
+          "name": "Get Cluster Images",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/faces/clusters/{{cluster_id}}/images"
+          }
+        },
+        {
+          "name": "Rename Cluster",
+          "request": {
+            "method": "PATCH",
+            "url": "{{base_url}}/api/v1/faces/clusters/{{cluster_id}}",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Merge Clusters",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/v1/faces/clusters/merge",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"source_id\": \"{{cluster_id_source}}\",\n  \"target_id\": \"{{cluster_id_target}}\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Duplicates",
+      "item": [
+        {
+          "name": "List Duplicates",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/duplicates?status=pending",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "duplicates"],
+              "query": [
+                { "key": "status", "value": "pending" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Resolve Duplicate",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/v1/duplicates/{{duplicate_id}}/resolve",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"keep_a\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Trigger Duplicate Scan",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/v1/duplicates/scan"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "List Categories",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/categories"
+          }
+        },
+        {
+          "name": "Get Category Images",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/categories/{{category_slug}}/images"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Google Photos",
+      "item": [
+        {
+          "name": "Get Auth URL",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/google-photos/auth-url"
+          }
+        },
+        {
+          "name": "OAuth Callback",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/v1/google-photos/callback",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"authorization_code_here\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Sync Google Photos",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/v1/google-photos/sync"
+          }
+        },
+        {
+          "name": "Google Photos Status",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/google-photos/status"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Jobs",
+      "item": [
+        {
+          "name": "List Jobs",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/jobs"
+          }
+        },
+        {
+          "name": "Get Job",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/jobs/{{job_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stats",
+      "item": [
+        {
+          "name": "Dashboard Overview",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/stats/overview"
+          }
+        }
+      ]
+    }
+  ]
+}

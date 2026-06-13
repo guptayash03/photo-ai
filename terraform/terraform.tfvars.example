@@ -1,0 +1,5 @@
+project_id  = "panscience"
+region      = "asia-south1"
+db_password = "Guptayash@03"
+db_name     = "photomanager"
+db_user     = "postgres"

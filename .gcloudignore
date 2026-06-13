@@ -1,0 +1,16 @@
+.git
+.gitignore
+node_modules
+__pycache__
+*.pyc
+.env
+.env.*
+!.env.example
+!.env.gcp.example
+.venv
+venv
+.terraform
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+terraform.tfvars
