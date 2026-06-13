@@ -2,6 +2,17 @@
 
 An AI-powered photo management platform that provides automatic categorization, face recognition, duplicate detection, and natural language search for large image libraries (100k+ images).
 
+## Images
+
+### Photos Page
+![Photos Page](images/photos-page.png)
+
+### Dashboard (White Theme)
+![White Theme Dashboard](images/white-theme-dashboard.png)
+
+### AI Search Page
+![AI Search Page](images/ai-search-page.png)
+
 ## Features
 
 - **AI Categorization** — Automatically classifies photos (documents, prescriptions, receipts, people, travel, pets, food, nature) using Gemini Vision
@@ -11,14 +22,6 @@ An AI-powered photo management platform that provides automatic categorization, 
 - **Google Photos Integration** — OAuth2 sync with your Google Photos library
 - **Scale** — Designed for 100k+ images with pgvector HNSW indexes, cursor pagination, and async processing
 - **Dual Deployment** — Runs locally via Docker Compose or deploys to GCP with Terraform
-
-## Screenshots
-
-### Photos Page
-![Photos Page](images/photos-page.png)
-
-### Dashboard (White Theme)
-![White Theme Dashboard](images/white-theme-dashboard.png)
 
 ## Architecture
 
