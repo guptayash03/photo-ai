@@ -96,7 +96,7 @@ export default function SearchPage() {
                     {result.image.thumbnail_url ? (
                       <img
                         src={result.image.thumbnail_url}
-                        alt={result.image.filename}
+                        alt={result.image.original_filename}
                         className="h-full w-full object-cover transition-transform group-hover:scale-105"
                       />
                     ) : (

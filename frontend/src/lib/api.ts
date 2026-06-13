@@ -29,7 +29,8 @@ export const api = {
       const params = new URLSearchParams({ limit: String(limit) });
       if (cursor) params.set("cursor", cursor);
       if (category) params.set("category", category);
-      return request<PaginatedResponse<Image>>(`/api/v1/images?${params}`);
+      return request<{ images: Image[]; total: number; next_cursor: string | null }>(`/api/v1/images?${params}`)
+        .then((res) => ({ items: res.images, total: res.total, next_cursor: res.next_cursor }));
     },
     get(id: string) {
       return request<Image>(`/api/v1/images/${id}`);
@@ -77,14 +78,15 @@ export const api = {
 
   faces: {
     listClusters() {
-      return request<FaceCluster[]>("/api/v1/faces/clusters");
+      return request<{ clusters: FaceCluster[]; total: number }>("/api/v1/faces/clusters")
+        .then((res) => res.clusters);
     },
     getClusterImages(clusterId: string, cursor?: string) {
       const params = new URLSearchParams();
       if (cursor) params.set("cursor", cursor);
-      return request<PaginatedResponse<Image>>(
+      return request<{ images: Image[]; total: number; next_cursor: string | null }>(
         `/api/v1/faces/clusters/${clusterId}/images?${params}`
-      );
+      ).then((res) => ({ items: res.images, total: res.total, next_cursor: res.next_cursor }));
     },
     renameCluster(clusterId: string, name: string) {
       return request<FaceCluster>(`/api/v1/faces/clusters/${clusterId}`, {
@@ -102,7 +104,8 @@ export const api = {
 
   duplicates: {
     list(status = "pending") {
-      return request<DuplicatePair[]>(`/api/v1/duplicates?status=${status}`);
+      return request<{ pairs: DuplicatePair[]; total: number }>(`/api/v1/duplicates?status=${status}`)
+        .then((res) => res.pairs);
     },
     resolve(id: string, action: "keep_a" | "keep_b" | "dismiss") {
       return request<void>(`/api/v1/duplicates/${id}/resolve`, {
@@ -125,9 +128,9 @@ export const api = {
     getImages(slug: string, cursor?: string) {
       const params = new URLSearchParams();
       if (cursor) params.set("cursor", cursor);
-      return request<PaginatedResponse<Image>>(
+      return request<{ images: Image[]; total: number; next_cursor: string | null }>(
         `/api/v1/categories/${slug}/images?${params}`
-      );
+      ).then((res) => ({ items: res.images, total: res.total, next_cursor: res.next_cursor }));
     },
   },
 

@@ -24,8 +24,8 @@ function DuplicateCard({ pair }: { pair: DuplicatePair }) {
     <Card>
       <CardContent className="p-4">
         <div className="flex items-center gap-2 mb-3">
-          <Badge variant={pair.detection_type === "exact" ? "default" : "secondary"}>
-            {pair.detection_type}
+          <Badge variant={pair.duplicate_type === "exact" ? "default" : "secondary"}>
+            {pair.duplicate_type}
           </Badge>
           <span className="text-sm text-muted-foreground">
             {Math.round(pair.similarity_score * 100)}% similar
@@ -38,7 +38,7 @@ function DuplicateCard({ pair }: { pair: DuplicatePair }) {
               {pair.image_a.thumbnail_url ? (
                 <img
                   src={pair.image_a.thumbnail_url}
-                  alt={pair.image_a.filename}
+                  alt={pair.image_a.original_filename}
                   className="h-full w-full object-cover"
                 />
               ) : (
@@ -46,7 +46,7 @@ function DuplicateCard({ pair }: { pair: DuplicatePair }) {
               )}
             </div>
             <div className="text-xs space-y-0.5">
-              <p className="truncate font-medium">{pair.image_a.filename}</p>
+              <p className="truncate font-medium">{pair.image_a.original_filename}</p>
               <p className="text-muted-foreground">{formatBytes(pair.image_a.file_size)}</p>
               {pair.image_a.width && (
                 <p className="text-muted-foreground">{pair.image_a.width}x{pair.image_a.height}</p>
@@ -68,7 +68,7 @@ function DuplicateCard({ pair }: { pair: DuplicatePair }) {
               {pair.image_b.thumbnail_url ? (
                 <img
                   src={pair.image_b.thumbnail_url}
-                  alt={pair.image_b.filename}
+                  alt={pair.image_b.original_filename}
                   className="h-full w-full object-cover"
                 />
               ) : (
@@ -76,7 +76,7 @@ function DuplicateCard({ pair }: { pair: DuplicatePair }) {
               )}
             </div>
             <div className="text-xs space-y-0.5">
-              <p className="truncate font-medium">{pair.image_b.filename}</p>
+              <p className="truncate font-medium">{pair.image_b.original_filename}</p>
               <p className="text-muted-foreground">{formatBytes(pair.image_b.file_size)}</p>
               {pair.image_b.width && (
                 <p className="text-muted-foreground">{pair.image_b.width}x{pair.image_b.height}</p>

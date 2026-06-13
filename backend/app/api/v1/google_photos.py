@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import get_settings
@@ -19,19 +20,17 @@ async def get_auth_url():
     return {"auth_url": auth_url}
 
 
-@router.post("/callback")
+@router.get("/callback")
 async def oauth_callback(
-    request: Request,
+    code: str = Query(...),
     db: AsyncSession = Depends(get_db),
 ):
-    body = await request.json()
-    code = body.get("code")
-    if not code:
-        raise HTTPException(status_code=400, detail="Authorization code required")
-
+    settings = get_settings()
     service = GooglePhotosService()
     tokens = await service.exchange_code(code)
-    return {"message": "Google Photos connected successfully", "connected": True}
+
+    frontend_url = settings.ALLOWED_ORIGINS.split(",")[0] if settings.ALLOWED_ORIGINS else "http://localhost:3000"
+    return RedirectResponse(url=f"{frontend_url}/settings?google_photos=connected")
 
 
 @router.post("/sync")

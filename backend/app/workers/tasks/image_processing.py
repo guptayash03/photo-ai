@@ -132,9 +132,11 @@ def _generate_embedding(session, image, image_bytes: bytes, loop):
     try:
         provider = get_embedding_provider()
         embedding = loop.run_until_complete(provider.embed_image(image_bytes))
-        image.embedding = embedding
+        # Cast to Python floats — psycopg2 cannot adapt numpy.float32
+        image.embedding = [float(x) for x in embedding]
         session.commit()
     except Exception as e:
+        session.rollback()
         logger.warning(f"Embedding generation failed for {image.id}: {e}")
 
 
@@ -155,6 +157,7 @@ def _categorize_image(session, image, image_bytes: bytes, loop):
         session.add(cat_entry)
         session.commit()
     except Exception as e:
+        session.rollback()
         logger.warning(f"Categorization failed for {image.id}: {e}")
 
 
@@ -201,6 +204,7 @@ def _detect_faces(session, image, image_bytes: bytes, storage, loop):
 
         session.commit()
     except Exception as e:
+        session.rollback()
         logger.warning(f"Face detection failed for {image.id}: {e}")
 
 

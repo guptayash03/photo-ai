@@ -16,7 +16,7 @@ function PhotoCard({ image }: { image: Image }) {
         {image.thumbnail_url ? (
           <img
             src={image.thumbnail_url}
-            alt={image.filename}
+            alt={image.original_filename}
             className="h-full w-full object-cover transition-transform group-hover:scale-105"
             loading="lazy"
           />
@@ -29,7 +29,7 @@ function PhotoCard({ image }: { image: Image }) {
         )}
       </div>
       <div className="p-3">
-        <p className="truncate text-sm font-medium">{image.filename}</p>
+        <p className="truncate text-sm font-medium">{image.original_filename}</p>
         <div className="mt-1 flex items-center justify-between">
           <span className="text-xs text-muted-foreground">
             {formatRelativeTime(image.created_at)}
@@ -39,7 +39,7 @@ function PhotoCard({ image }: { image: Image }) {
           )}
           {image.categories.length > 0 && (
             <Badge variant="outline" className="text-xs capitalize">
-              {image.categories[0].category}
+              {image.categories[0]}
             </Badge>
           )}
         </div>

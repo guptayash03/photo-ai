@@ -1,9 +1,8 @@
 export interface Image {
   id: string;
-  filename: string;
-  storage_path: string;
+  original_filename: string;
   thumbnail_url: string | null;
-  url: string;
+  storage_url?: string | null;
   file_size: number;
   mime_type: string;
   width: number | null;
@@ -11,19 +10,12 @@ export interface Image {
   taken_at: string | null;
   camera_make: string | null;
   camera_model: string | null;
-  gps_lat: number | null;
-  gps_lng: number | null;
-  source: "upload" | "google_photos" | "local_fs";
-  processing_status: "pending" | "processing" | "completed" | "failed";
-  categories: ImageCategory[];
+  gps_latitude: number | null;
+  gps_longitude: number | null;
+  source: string;
+  processing_status: string;
+  categories: string[];
   created_at: string;
-  updated_at: string;
-}
-
-export interface ImageCategory {
-  id: string;
-  category: CategoryType;
-  confidence: number;
 }
 
 export type CategoryType =
@@ -57,14 +49,23 @@ export interface Face {
   confidence: number;
 }
 
+export interface DuplicateImageInfo {
+  id: string;
+  original_filename: string;
+  thumbnail_url: string | null;
+  file_size: number;
+  width: number | null;
+  height: number | null;
+}
+
 export interface DuplicatePair {
   id: string;
-  image_a: Image;
-  image_b: Image;
+  image_a: DuplicateImageInfo;
+  image_b: DuplicateImageInfo;
   similarity_score: number;
-  detection_type: "exact" | "near" | "semantic";
+  duplicate_type: string;
   detection_method: string;
-  status: "pending" | "resolved";
+  status: string;
   created_at: string;
 }
 

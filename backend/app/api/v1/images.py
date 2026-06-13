@@ -4,6 +4,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, File, UploadFile, Query, HTTPException
 from sqlalchemy import select, func, desc
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.core.database import get_db
 from app.core.storage import get_storage
@@ -80,7 +81,7 @@ async def list_images(
     status: Optional[str] = Query(None),
     db: AsyncSession = Depends(get_db),
 ):
-    query = select(Image).order_by(desc(Image.created_at))
+    query = select(Image).options(selectinload(Image.categories)).order_by(desc(Image.created_at))
 
     if cursor:
         try:
@@ -140,7 +141,12 @@ async def list_images(
 
 @router.get("/{image_id}", response_model=ImageDetailResponse)
 async def get_image(image_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
-    image = await db.get(Image, image_id)
+    result = await db.execute(
+        select(Image)
+        .options(selectinload(Image.categories), selectinload(Image.faces))
+        .where(Image.id == image_id)
+    )
+    image = result.scalar_one_or_none()
     if not image:
         raise HTTPException(status_code=404, detail="Image not found")
 
@@ -181,6 +187,23 @@ async def get_image(image_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
         phash=image.phash,
         face_count=face_count,
     )
+
+
+@router.post("/reprocess")
+async def reprocess_pending_images(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(
+        select(Image).where(Image.processing_status.in_(["pending", "failed", "processing"]))
+    )
+    images = result.scalars().all()
+
+    queued = []
+    for image in images:
+        image.processing_status = "pending"
+        process_image_pipeline.delay(str(image.id))
+        queued.append(str(image.id))
+
+    await db.commit()
+    return {"queued": len(queued), "image_ids": queued}
 
 
 @router.delete("/{image_id}")

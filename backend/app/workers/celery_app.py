@@ -34,4 +34,9 @@ celery_app.conf.update(
     },
 )
 
-celery_app.autodiscover_tasks(["app.workers.tasks"])
+celery_app.autodiscover_tasks(["app.workers"])
+
+# Explicitly import task modules to ensure they are registered
+import app.workers.tasks.image_processing  # noqa: F401, E402
+import app.workers.tasks.duplicate_detection  # noqa: F401, E402
+import app.workers.tasks.face_detection  # noqa: F401, E402

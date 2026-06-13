@@ -76,7 +76,7 @@ export default function FaceClusterDetailPage() {
                 {photo.thumbnail_url ? (
                   <img
                     src={photo.thumbnail_url}
-                    alt={photo.filename}
+                    alt={photo.original_filename}
                     className="h-full w-full object-cover transition-transform group-hover:scale-105"
                     loading="lazy"
                   />

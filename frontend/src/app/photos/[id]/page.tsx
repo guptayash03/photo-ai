@@ -66,8 +66,8 @@ export default function PhotoDetailPage() {
         <div className="col-span-2">
           <div className="overflow-hidden rounded-lg border bg-muted">
             <img
-              src={image.url}
-              alt={image.filename}
+              src={image.storage_url || image.thumbnail_url || ""}
+              alt={image.original_filename}
               className="w-full h-auto max-h-[70vh] object-contain"
             />
           </div>
@@ -81,7 +81,7 @@ export default function PhotoDetailPage() {
             <CardContent className="space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Filename</span>
-                <span className="font-medium truncate ml-2 max-w-[180px]">{image.filename}</span>
+                <span className="font-medium truncate ml-2 max-w-[180px]">{image.original_filename}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Size</span>
@@ -128,8 +128,8 @@ export default function PhotoDetailPage() {
               <CardContent>
                 <div className="flex flex-wrap gap-2">
                   {image.categories.map((cat) => (
-                    <Badge key={cat.id} variant="secondary" className="capitalize">
-                      {cat.category} ({Math.round(cat.confidence * 100)}%)
+                    <Badge key={cat} variant="secondary" className="capitalize">
+                      {cat}
                     </Badge>
                   ))}
                 </div>
