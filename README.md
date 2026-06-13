@@ -12,6 +12,22 @@ An AI-powered photo management platform that provides automatic categorization, 
 - **Scale** — Designed for 100k+ images with pgvector HNSW indexes, cursor pagination, and async processing
 - **Dual Deployment** — Runs locally via Docker Compose or deploys to GCP with Terraform
 
+## Architecture
+
+```
+┌─────────────┐    ┌─────────────┐    ┌──────────────────┐
+│   Next.js   │◄──►│   FastAPI   │◄──►│   PostgreSQL 16  │
+│  :3000      │    │   :8000     │    │   + pgvector     │
+└─────────────┘    └──────┬──────┘    └──────────────────┘
+                          │
+              ┌───────────┼───────────┐
+              ▼           ▼           ▼
+        ┌──────────┐ ┌────────┐ ┌──────────┐
+        │  Celery  │ │ Redis  │ │  MinIO   │
+        │ Workers  │ │ :6379  │ │ :9000    │
+        └──────────┘ └────────┘ └──────────┘
+```
+
 ## Tech Stack
 
 | Layer | Local | Cloud (GCP) |
@@ -24,6 +40,36 @@ An AI-powered photo management platform that provides automatic categorization, 
 | AI Embeddings | Vertex AI Multimodal (1408d) | Same |
 | AI Vision | Gemini 1.5 Flash | Same |
 | Faces | InsightFace buffalo_l (512d) | Same |
+
+### Processing Pipeline
+
+Each uploaded image goes through:
+1. **Preprocess** — Thumbnail generation, EXIF extraction, MD5 hash
+2. **Parallel Analysis** — Vertex AI embedding | Perceptual hashes | Face detection
+3. **Intelligence** — Gemini categorization | Duplicate matching | Face clustering
+4. **Complete** — WebSocket notification, stats update
+
+## Project Structure
+
+```
+├── backend/             # FastAPI application
+│   ├── app/
+│   │   ├── api/         # REST endpoints
+│   │   ├── models/      # SQLAlchemy ORM models
+│   │   ├── ml/          # AI/ML modules (embeddings, faces, hashing)
+│   │   ├── workers/     # Celery tasks
+│   │   └── core/        # Database, storage, config
+│   └── tests/
+├── frontend/            # Next.js application
+│   └── src/
+│       ├── app/         # Pages (App Router)
+│       ├── components/  # UI components
+│       └── lib/         # API client, utilities
+├── terraform/           # GCP infrastructure as code
+├── deploy/              # CI/CD and deployment scripts
+├── docs/                # Architecture and setup guides
+└── postman/             # API collection
+```
 
 ## Quick Start (Docker)
 
@@ -61,30 +107,6 @@ make test         # Run all tests
 make lint         # Lint backend code
 make logs         # Tail service logs
 ```
-
-## Architecture
-
-```
-┌─────────────┐    ┌─────────────┐    ┌──────────────────┐
-│   Next.js   │◄──►│   FastAPI   │◄──►│   PostgreSQL 16  │
-│  :3000      │    │   :8000     │    │   + pgvector     │
-└─────────────┘    └──────┬──────┘    └──────────────────┘
-                          │
-              ┌───────────┼───────────┐
-              ▼           ▼           ▼
-        ┌──────────┐ ┌────────┐ ┌──────────┐
-        │  Celery  │ │ Redis  │ │  MinIO   │
-        │ Workers  │ │ :6379  │ │ :9000    │
-        └──────────┘ └────────┘ └──────────┘
-```
-
-### Processing Pipeline
-
-Each uploaded image goes through:
-1. **Preprocess** — Thumbnail generation, EXIF extraction, MD5 hash
-2. **Parallel Analysis** — Vertex AI embedding | Perceptual hashes | Face detection
-3. **Intelligence** — Gemini categorization | Duplicate matching | Face clustering
-4. **Complete** — WebSocket notification, stats update
 
 ## GCP Deployment
 
@@ -145,28 +167,6 @@ docker compose exec api pytest tests/integration -v
 
 # Frontend tests
 cd frontend && npm test
-```
-
-## Project Structure
-
-```
-├── backend/             # FastAPI application
-│   ├── app/
-│   │   ├── api/         # REST endpoints
-│   │   ├── models/      # SQLAlchemy ORM models
-│   │   ├── ml/          # AI/ML modules (embeddings, faces, hashing)
-│   │   ├── workers/     # Celery tasks
-│   │   └── core/        # Database, storage, config
-│   └── tests/
-├── frontend/            # Next.js application
-│   └── src/
-│       ├── app/         # Pages (App Router)
-│       ├── components/  # UI components
-│       └── lib/         # API client, utilities
-├── terraform/           # GCP infrastructure as code
-├── deploy/              # CI/CD and deployment scripts
-├── docs/                # Architecture and setup guides
-└── postman/             # API collection
 ```
 
 ## Design Decisions
