@@ -14,18 +14,57 @@ An AI-powered photo management platform that provides automatic categorization, 
 
 ## Architecture
 
+### Local Deployment
+
 ```
-┌─────────────┐    ┌─────────────┐    ┌──────────────────┐
-│   Next.js   │◄──►│   FastAPI   │◄──►│   PostgreSQL 16  │
-│  :3000      │    │   :8000     │    │   + pgvector     │
-└─────────────┘    └──────┬──────┘    └──────────────────┘
-                          │
-              ┌───────────┼───────────┐
-              ▼           ▼           ▼
-        ┌──────────┐ ┌────────┐ ┌──────────┐
-        │  Celery  │ │ Redis  │ │  MinIO   │
-        │ Workers  │ │ :6379  │ │ :9000    │
-        └──────────┘ └────────┘ └──────────┘
+┌──────────────────────────────────────────────────────────────┐
+│                      Docker Network                          │
+│                                                              │
+│  ┌──────────┐   ┌──────────┐   ┌───────────────────────┐     │
+│  │ Next.js  │──►│ FastAPI  │──►│  PostgreSQL 16        │     │
+│  │ :3000    │   │ :8000    │   │  + pgvector extension │     │
+│  └──────────┘   └────┬─────┘   └───────────────────────┘     │
+│                      │                                       │
+│          ┌───────────┼───────────┐                           │
+│          ▼           ▼           ▼                           │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐                    │
+│  │  Celery  │  │  Redis   │  │  MinIO   │                    │
+│  │ Workers  │  │  :6379   │  │  :9000   │                    │
+│  └──────────┘  └──────────┘  └──────────┘                    │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
+         │                              │
+         ▼                              ▼
+  ┌──────────────┐              ┌──────────────┐
+  │ Vertex AI    │              │ Gemini       │
+  │ Embeddings   │              │ Vision API   │
+  └──────────────┘              └──────────────┘
+```
+
+### Cloud Deployment (GCP)
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Google Cloud Platform                │
+│                                                         │
+│  ┌──────────────┐  ┌──────────────┐  ┌─────────────┐    │
+│  │  Cloud Run   │  │  Cloud Run   │  │  Cloud SQL  │    │
+│  │  (Frontend)  │  │  (API)       │  │  PostgreSQL │    │
+│  └──────────────┘  └──────┬───────┘  └─────────────┘    │
+│                           │                             │
+│            ┌──────────────┼──────────────┐              │
+│            ▼              ▼              ▼              │
+│    ┌────────────┐  ┌────────────┐  ┌──────────┐         │
+│    │ Cloud Run  │  │ Memorystore│  │   GCS    │         │
+│    │ (Worker)   │  │  (Redis)   │  │ Buckets  │         │
+│    └────────────┘  └────────────┘  └──────────┘         │
+│                                                         │
+│  ┌──────────────┐  ┌──────────────┐  ┌─────────────┐    │
+│  │  Vertex AI   │  │   Gemini     │  │  Artifact   │    │
+│  │  Embeddings  │  │   Vision     │  │  Registry   │    │
+│  └──────────────┘  └──────────────┘  └─────────────┘    │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
 ```
 
 ## Tech Stack
@@ -40,14 +79,6 @@ An AI-powered photo management platform that provides automatic categorization, 
 | AI Embeddings | Vertex AI Multimodal (1408d) | Same |
 | AI Vision | Gemini 1.5 Flash | Same |
 | Faces | InsightFace buffalo_l (512d) | Same |
-
-### Processing Pipeline
-
-Each uploaded image goes through:
-1. **Preprocess** — Thumbnail generation, EXIF extraction, MD5 hash
-2. **Parallel Analysis** — Vertex AI embedding | Perceptual hashes | Face detection
-3. **Intelligence** — Gemini categorization | Duplicate matching | Face clustering
-4. **Complete** — WebSocket notification, stats update
 
 ## Project Structure
 
@@ -70,6 +101,13 @@ Each uploaded image goes through:
 ├── docs/                # Architecture and setup guides
 └── postman/             # API collection
 ```
+### Processing Pipeline
+
+Each uploaded image goes through:
+1. **Preprocess** — Thumbnail generation, EXIF extraction, MD5 hash
+2. **Parallel Analysis** — Vertex AI embedding | Perceptual hashes | Face detection
+3. **Intelligence** — Gemini categorization | Duplicate matching | Face clustering
+4. **Complete** — WebSocket notification, stats update
 
 ## Quick Start (Docker)
 
