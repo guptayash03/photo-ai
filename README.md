@@ -12,6 +12,14 @@ An AI-powered photo management platform that provides automatic categorization, 
 - **Scale** — Designed for 100k+ images with pgvector HNSW indexes, cursor pagination, and async processing
 - **Dual Deployment** — Runs locally via Docker Compose or deploys to GCP with Terraform
 
+## Screenshots
+
+### Photos Page
+![Photos Page](images/photos-page.png)
+
+### Dashboard (White Theme)
+![White Theme Dashboard](images/white-theme-dashboard.png)
+
 ## Architecture
 
 ### Local Deployment
@@ -101,6 +109,7 @@ An AI-powered photo management platform that provides automatic categorization, 
 ├── docs/                # Architecture and setup guides
 └── postman/             # API collection
 ```
+
 ### Processing Pipeline
 
 Each uploaded image goes through:
